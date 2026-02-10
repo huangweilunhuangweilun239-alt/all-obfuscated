@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://monlua-protector.vercel.app/raw/22f1f755a9e4444226cc8067ce5e01b9"))()
+loadstring(game:HttpGet("https://monlua-protector.vercel.app/raw/b1711268bb19e7cf7d79922bd2ee12a1"))()
