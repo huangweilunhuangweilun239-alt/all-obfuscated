@@ -1,0 +1,250 @@
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+
+local savedCFrame = nil
+local mainGuiVisible = true
+
+-- ScreenGui setup
+local sg = Instance.new("ScreenGui")
+sg.Name = "VoidXHub"
+sg.ResetOnSpawn = false
+sg.Parent = game.CoreGui
+
+-- Mini Button (VoidX toggle)
+local miniButton = Instance.new("TextButton")
+miniButton.Size = UDim2.new(0, 60, 0, 60)
+miniButton.Position = UDim2.new(0, 20, 0.5, -30)
+miniButton.BackgroundColor3 = Color3.fromRGB(0,0,0)
+miniButton.Text = "VoidX"
+miniButton.TextColor3 = Color3.new(1,1,1)
+miniButton.Font = Enum.Font.SourceSansBold
+miniButton.TextSize = 16
+miniButton.BorderSizePixel = 0
+miniButton.Parent = sg
+
+local miniCorner = Instance.new("UICorner")
+miniCorner.CornerRadius = UDim.new(0.5, 0)
+miniCorner.Parent = miniButton
+
+-- Draggable mini
+local draggingMini, dragStartMini, startPosMini
+miniButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        draggingMini = true
+        dragStartMini = input.Position
+        startPosMini = miniButton.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then draggingMini = false end
+        end)
+    end
+end)
+
+miniButton.InputChanged:Connect(function(input)
+    if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) and draggingMini then
+        local delta = input.Position - dragStartMini
+        miniButton.Position = UDim2.new(startPosMini.X.Scale, startPosMini.X.Offset + delta.X, startPosMini.Y.Scale, startPosMini.Y.Offset + delta.Y)
+    end
+end)
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 240, 0, 340)
+frame.Position = UDim2.new(0.5, -120, 0.5, -170)
+frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+frame.BorderSizePixel = 0
+frame.Visible = true
+frame.Parent = sg
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 12)
+frameCorner.Parent = frame
+
+local frameStroke = Instance.new("UIStroke")
+frameStroke.Color = Color3.fromRGB(0, 255, 0)
+frameStroke.Thickness = 3
+frameStroke.Parent = frame
+
+-- Title & TikTok label
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 50)
+title.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+title.Text = "VoidX Hub"
+title.TextColor3 = Color3.fromRGB(0, 255, 0)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 26
+title.Parent = frame
+
+local tiktokLabel = Instance.new("TextLabel")
+tiktokLabel.Size = UDim2.new(1, 0, 0, 30)
+tiktokLabel.Position = UDim2.new(0, 0, 0, 50)
+tiktokLabel.BackgroundTransparency = 1
+tiktokLabel.Text = "TIKTOK: @voidscript"
+tiktokLabel.TextColor3 = Color3.fromRGB(150, 255, 150)
+tiktokLabel.Font = Enum.Font.SourceSans
+tiktokLabel.TextSize = 16
+tiktokLabel.Parent = frame
+
+-- Esp Best Button (placeholder logic)
+local espBestActive = false
+local espBestBtn = Instance.new("TextButton")
+espBestBtn.Size = UDim2.new(0.9, 0, 0, 45)
+espBestBtn.Position = UDim2.new(0.05, 0, 0.25, 0)
+espBestBtn.Text = "Esp Best"
+espBestBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+espBestBtn.TextColor3 = Color3.new(1,1,1)
+espBestBtn.Font = Enum.Font.SourceSansBold
+espBestBtn.TextSize = 18
+espBestBtn.Parent = frame
+
+local espBestCorner = Instance.new("UICorner")
+espBestCorner.CornerRadius = UDim.new(0, 8)
+espBestCorner.Parent = espBestBtn
+
+espBestBtn.MouseButton1Click:Connect(function()
+    espBestActive = not espBestActive
+    espBestBtn.BackgroundColor3 = espBestActive and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(40, 40, 40)
+    -- Add your Esp Best logic here
+end)
+
+-- Base Esp Button (placeholder logic)
+local baseEspActive = false
+local baseEspBtn = Instance.new("TextButton")
+baseEspBtn.Size = UDim2.new(0.9, 0, 0, 45)
+baseEspBtn.Position = UDim2.new(0.05, 0, 0.40, 0)
+baseEspBtn.Text = "Base Esp"
+baseEspBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+baseEspBtn.TextColor3 = Color3.new(1,1,1)
+baseEspBtn.Font = Enum.Font.SourceSansBold
+baseEspBtn.TextSize = 18
+baseEspBtn.Parent = frame
+
+local baseCorner = Instance.new("UICorner")
+baseCorner.CornerRadius = UDim.new(0, 8)
+baseCorner.Parent = baseEspBtn
+
+baseEspBtn.MouseButton1Click:Connect(function()
+    baseEspActive = not baseEspActive
+    baseEspBtn.BackgroundColor3 = baseEspActive and Color3.fromRGB(0, 180, 0) or Color3.fromRGB(40, 40, 40)
+    -- Add your Base Esp logic here
+end)
+
+-- SAVE POSITION
+local saveBtn = Instance.new("TextButton")
+saveBtn.Size = UDim2.new(0.9, 0, 0, 45)
+saveBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
+saveBtn.Text = "SAVE POSITION"
+saveBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)  -- original
+saveBtn.TextColor3 = Color3.new(1,1,1)
+saveBtn.Font = Enum.Font.SourceSansBold
+saveBtn.TextSize = 18
+saveBtn.Parent = frame
+
+local saveCorner = Instance.new("UICorner")
+saveCorner.CornerRadius = UDim.new(0, 8)
+saveCorner.Parent = saveBtn
+
+saveBtn.MouseButton1Click:Connect(function()
+    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        savedCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+        
+        -- Change text and flash green
+        local originalText = saveBtn.Text
+        local originalColor = saveBtn.BackgroundColor3
+        
+        saveBtn.Text = "Position Saved!"
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        
+        TweenService:Create(saveBtn, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 180, 0)}):Play()
+        
+        task.delay(1, function()
+            TweenService:Create(saveBtn, tweenInfo, {BackgroundColor3 = originalColor}):Play()
+            saveBtn.Text = originalText
+        end)
+    end
+end)
+
+-- TP TO SAVED
+local tpBtn = Instance.new("TextButton")
+tpBtn.Size = UDim2.new(0.9, 0, 0, 45)
+tpBtn.Position = UDim2.new(0.05, 0, 0.70, 0)
+tpBtn.Text = "TP TO SAVED"
+tpBtn.BackgroundColor3 = Color3.fromRGB(30, 30, 30)  -- original (slightly darker)
+tpBtn.TextColor3 = Color3.new(1,1,1)
+tpBtn.Font = Enum.Font.SourceSansBold
+tpBtn.TextSize = 18
+tpBtn.Parent = frame
+
+local tpCorner = Instance.new("UICorner")
+tpCorner.CornerRadius = UDim.new(0, 8)
+tpCorner.Parent = tpBtn
+
+tpBtn.MouseButton1Click:Connect(function()
+    if savedCFrame and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        LocalPlayer.Character.HumanoidRootPart.CFrame = savedCFrame
+        
+        -- Change text and flash green
+        local originalText = tpBtn.Text
+        local originalColor = tpBtn.BackgroundColor3
+        
+        tpBtn.Text = "Teleported!"
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        
+        TweenService:Create(tpBtn, tweenInfo, {BackgroundColor3 = Color3.fromRGB(0, 180, 0)}):Play()
+        
+        task.delay(1, function()
+            TweenService:Create(tpBtn, tweenInfo, {BackgroundColor3 = originalColor}):Play()
+            tpBtn.Text = originalText
+        end)
+    end
+end)
+
+-- Discord button (unchanged)
+local discBtn = Instance.new("TextButton")
+discBtn.Size = UDim2.new(0.9, 0, 0, 45)
+discBtn.Position = UDim2.new(0.05, 0, 0.85, 0)
+discBtn.Text = "Discord"
+discBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
+discBtn.TextColor3 = Color3.new(1,1,1)
+discBtn.Font = Enum.Font.SourceSansBold
+discBtn.TextSize = 18
+discBtn.Parent = frame
+
+local discCorner = Instance.new("UICorner")
+discCorner.CornerRadius = UDim.new(0, 8)
+discCorner.Parent = discBtn
+
+discBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://discord.gg/robloxscript")
+end)
+
+-- Mini toggle
+miniButton.MouseButton1Click:Connect(function()
+    mainGuiVisible = not mainGuiVisible
+    frame.Visible = mainGuiVisible
+end)
+
+-- Draggable frame (from title)
+local dragging, dragInput, dragStart, startPos
+title.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
